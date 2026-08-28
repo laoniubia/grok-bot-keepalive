@@ -1,0 +1,29 @@
+name: Grok Bot 24x7 Keep-Alive Watchdog
+
+on:
+  schedule:
+    # 每 10 分钟自动在 GitHub 云端唤醒并执行心跳
+    - cron: '*/10 * * * *'
+  workflow_dispatch: # 支持在 GitHub 页面随时手动点击执行测试
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install requests
+
+      - name: Execute Watchdog Heartbeat
+        env:
+          GROK_TOKEN: ${{ secrets.GROK_TOKEN }}
+        run: |
+          python keepalive.py
